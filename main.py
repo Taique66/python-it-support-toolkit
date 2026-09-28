@@ -5,6 +5,11 @@ print("=== Python IT Support Toolkit ===")
 
 num_cores = os.cpu_count()
 
+if num_cores >= 8:   
+     print("O sistema reconhece 8 ou mais CPUs lógicas.")
+else:
+     print("O sistema reconhece menos de 8 CPUs lógicas.")
+
 print("CPUs lógicas:", num_cores)
 
 sistema = platform.system()
