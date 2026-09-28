@@ -1,8 +1,23 @@
 import platform
 import os
 import shutil
+import psutil
 
 print("=== Python IT Support Toolkit ===")
+
+memoria = psutil.virtual_memory()
+ram_total_gib = memoria.total / (1024 ** 3)
+ram_disponivel_gib = memoria.available / (1024 ** 3)
+uso_ram = 85
+
+print("Memória total:", f"{ram_total_gib:.2f} GiB")
+print("Memória disponível:", f"{ram_disponivel_gib:.2f} GiB")
+print(f"Uso da RAM: {uso_ram:.2f}%")
+if uso_ram > 80:
+    print("ALERTA: Uso da RAM acima de 80%.")
+else:
+    print("Uso da RAM abaixo ou igual a 80%.")
+
 
 disco = shutil.disk_usage("/")
 total_gib = disco.total / (1024 ** 3)
