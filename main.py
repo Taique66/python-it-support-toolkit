@@ -3,12 +3,33 @@ import os
 import shutil
 import psutil
 
+
+def consultar_sistema():
+    return {
+        "sistema": platform.system(),
+        "nome_maquina": platform.node(),
+        "kernel": platform.release()
+    }
 print("=== Python IT Support Toolkit ===")
 
-memoria = psutil.virtual_memory()
-ram_total_gib = memoria.total / (1024 ** 3)
-ram_disponivel_gib = memoria.available / (1024 ** 3)
-uso_ram = 85
+def consultar_memoria():
+    memoria = psutil.virtual_memory()
+    return {
+        "total_gib": memoria.total / (1024 ** 3),
+        "disponivel_gib": memoria.available / (1024 ** 3),
+        "uso_percentual": memoria.percent
+    }
+
+dados_sistema = consultar_sistema()
+
+print("Meu computador usa:", dados_sistema["sistema"])
+print("Nome da máquina:", dados_sistema["nome_maquina"])
+print("Versão do kernel:", dados_sistema["kernel"])
+
+dados_memoria = consultar_memoria()
+ram_total_gib = dados_memoria["total_gib"]
+ram_disponivel_gib = dados_memoria["disponivel_gib"]
+uso_ram = dados_memoria["uso_percentual"]
 
 print("Memória total:", f"{ram_total_gib:.2f} GiB")
 print("Memória disponível:", f"{ram_disponivel_gib:.2f} GiB")
@@ -35,6 +56,8 @@ else:
 
 
 num_cores = os.cpu_count()
+uso_cpu = psutil.cpu_percent(interval=1)
+print(f"Uso da CPU: {uso_cpu:.2f}%")
 
 if num_cores >= 8:   
      print("O sistema reconhece 8 ou mais CPUs lógicas.")
@@ -42,13 +65,3 @@ else:
      print("O sistema reconhece menos de 8 CPUs lógicas.")
 
 print("CPUs lógicas:", num_cores)
-
-sistema = platform.system()
-
-print("Meu computador usa:", sistema)
-
-nome_maquina = platform.node()
-print("Nome da máquina:", nome_maquina)
-
-versao_sistema = platform.release()
-print("Versão do kernel:", versao_sistema)
