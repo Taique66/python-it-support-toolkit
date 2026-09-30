@@ -72,6 +72,67 @@ def consultar_processos(filtro):
 
     return encontrados
 
+def consultar_dns(dominio):
+    try:
+        ip = socket.gethostbyname(dominio)
+        return {
+            "dominio": dominio,
+            "ipv4": ip,
+            "sucesso": True,
+            "erro": None
+        }
+    except socket.gaierror as erro:
+        return {
+            "dominio": dominio,
+            "ipv4": None,
+            "sucesso": False,
+            "erro": str(erro)
+        }
+
+
+def testar_tcp(destino, porta):
+    try:
+        with socket.create_connection((destino, porta), timeout=3):
+            return {
+                "destino": destino,
+                "porta": porta,
+                "sucesso": True,
+                "erro": None
+            }
+    except OSError as erro:
+        return {
+            "destino": destino,
+            "porta": porta,
+            "sucesso": False,
+            "erro": str(erro)
+        }
+def testar_ping(destino):
+    try:
+        resultado = subprocess.run(
+            ["ping", "-c", "4", "-w", "5", "--", destino],
+            timeout=7
+        )
+
+        return {
+            "destino": destino,
+            "sucesso": resultado.returncode == 0,
+            "codigo": resultado.returncode
+        }
+
+    except FileNotFoundError:
+        return {
+            "destino": destino,
+            "sucesso": False,
+            "codigo": None
+        }
+
+    except subprocess.TimeoutExpired:
+        return {
+            "destino": destino,
+            "sucesso": False,
+            "codigo": None
+        }
+
 dados_sistema = consultar_sistema()
 
 print("Meu computador usa:", dados_sistema["sistema"])
@@ -119,83 +180,31 @@ for interface in dados_interfaces:
 destino = input("IP da VM [192.168.122.223]: ").strip()
 if not destino:
     destino = "192.168.122.223"
+    
+dados_ping = testar_ping(destino)
 
-try:
-    resultado_ping = subprocess.run(
-        ["ping", "-c", "4", "-w", "5", "--", destino],
-        timeout=7
-    )
-
-    if resultado_ping.returncode == 0:
-        print("Ping bem-sucedido.")
-    else:
-        print("Falha no ping.")
-
-except FileNotFoundError:
-    print("O comando ping não está instalado.")
-except subprocess.TimeoutExpired:
-    print("O ping ultrapassou o limite de tempo.")
-
-dominio = "example.com"
-
-try:
-    ip_resolvido = socket.gethostbyname(dominio)
-    print("Domínio:", dominio)
-    print("IPv4 encontrado:", ip_resolvido)
-except socket.gaierror:
-    print("Falha ao resolver o domínio:", dominio)
-
-
-filtro = input(
-    "Nome do processo (Enter para listar todos): "
-).strip().lower()
-
-dados_processos = consultar_processos(filtro)
-
-print("=== Processos encontrados ===")
-
-for processo in dados_processos:
-    memoria_mib = processo["memoria_mib"]
-
-    if memoria_mib is not None:
-        print(
-            processo["pid"],
-            processo["nome"],
-            f"RAM: {memoria_mib:.2f} MiB"
-        )
-    else:
-        print(processo["pid"], processo["nome"], "RAM: indisponível")
-
-if not dados_processos:
-    print("Nenhum processo encontrado.")
+if dados_ping["sucesso"]:
+    print("Ping bem-sucedido.")
 else:
-    print("Total de processos encontrados:", len(dados_processos))
+    print("Falha no ping.")
 
-print("\n=== Portas TCP locais em escuta ===")
-print("A listagem pode ser parcial, conforme as permissões.")
+dominio = input("Domínio para consulta [example.com]: ").strip()
+if not dominio:
+    dominio = "example.com"
 
-try:
-    conexoes = psutil.net_connections(kind="tcp")
-    quantidade_portas = 0
+dados_dns = consultar_dns(dominio)
 
-    for conexao in conexoes:
-        if conexao.status == psutil.CONN_LISTEN:
-            print(
-                "IP:", conexao.laddr.ip,
-                "Porta:", conexao.laddr.port,
-                "PID:", conexao.pid
-            )
-            quantidade_portas += 1
-
-    print("Total de registros em escuta:", quantidade_portas)
-
-except psutil.AccessDenied:
-    print("Sem permissão para consultar as conexões TCP.")
+if dados_dns["sucesso"]:
+    print("Domínio:", dados_dns["dominio"])
+    print("IPv4 encontrado:", dados_dns["ipv4"])
+else:
+    print("Falha ao resolver o domínio:", dados_dns["erro"])
 
 print("\n=== Teste TCP da porta 22 da VM ===")
 
-try:
-    with socket.create_connection((destino, 22), timeout=3):
-        print("Conexão TCP aceita na porta 22.")
-except OSError as erro:
-    print("Não foi possível conectar à porta 22:", erro)
+dados_tcp = testar_tcp(destino, 22)
+
+if dados_tcp["sucesso"]:
+    print("Conexão TCP aceita na porta 22.")
+else:
+    print("Não foi possível conectar à porta 22:", dados_tcp["erro"])
