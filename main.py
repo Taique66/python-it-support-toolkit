@@ -2,7 +2,8 @@ import platform
 import os
 import shutil
 import psutil
-
+import socket
+import subprocess
 
 def consultar_sistema():
     return {
@@ -65,3 +66,23 @@ else:
      print("O sistema reconhece menos de 8 CPUs lógicas.")
 
 print("CPUs lógicas:", num_cores)
+
+interfaces = psutil.net_if_addrs()
+
+for nome in interfaces:
+    print("Interface:", nome)
+
+    for endereco in interfaces[nome]:
+        if endereco.family == socket.AF_INET:
+            print("  IPv4:", endereco.address)
+
+resultado_ping = subprocess.run(
+    ["ping", "-c", "4", "192.168.122.223"]
+)
+
+print("Código de saída:", resultado_ping.returncode)
+
+if resultado_ping.returncode == 0:
+    print("Ping bem-sucedido.")
+else:
+    print("Falha no ping.")
