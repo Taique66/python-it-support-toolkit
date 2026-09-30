@@ -95,3 +95,21 @@ try:
     print("IPv4 encontrado:", ip_resolvido)
 except socket.gaierror:
     print("Falha ao resolver o domínio:", dominio)
+
+
+filtro = input("Digite o nome do processo: ").strip().lower()
+
+print("=== Processos encontrados ===")
+quantidade = 0
+
+for processo in psutil.process_iter(["pid", "name"]):
+    nome = processo.info["name"] or ""
+
+    if filtro in nome.lower():
+        print(processo.info["pid"], nome)
+        quantidade += 1
+
+if quantidade == 0:
+    print("Nenhum processo encontrado.")
+else:
+    print("Total de processos encontrados:", quantidade)
