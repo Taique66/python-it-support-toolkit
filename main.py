@@ -86,3 +86,12 @@ if resultado_ping.returncode == 0:
     print("Ping bem-sucedido.")
 else:
     print("Falha no ping.")
+
+dominio = "example.com"
+
+try:
+    ip_resolvido = socket.gethostbyname(dominio)
+    print("Domínio:", dominio)
+    print("IPv4 encontrado:", ip_resolvido)
+except socket.gaierror:
+    print("Falha ao resolver o domínio:", dominio)
