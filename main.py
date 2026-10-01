@@ -4,6 +4,8 @@ import shutil
 import psutil
 import socket
 import subprocess
+import json
+import json
 
 def consultar_disco():
     disco = shutil.disk_usage("/")
@@ -270,3 +272,27 @@ if dados_tcp["sucesso"]:
     print("Conexão TCP aceita na porta 22.")
 else:
     print("Não foi possível conectar à porta 22:", dados_tcp["erro"])
+
+relatorio = {
+    "sistema": dados_sistema,
+    "memoria": dados_memoria,
+    "disco": dados_disco,
+    "cpu": dados_cpu,
+    "interfaces": dados_interfaces,
+    "ping": dados_ping,
+    "dns": dados_dns,
+    "processos": {
+        "filtro": filtro,
+        "resultados": dados_processos
+    },
+    "portas_tcp": dados_portas,
+    "teste_tcp": dados_tcp
+}
+
+try:
+    with open("report.json", "w", encoding="utf-8") as arquivo:
+        json.dump(relatorio, arquivo, indent=4, ensure_ascii=False)
+
+    print("\nRelatório salvo em report.json.")
+except OSError as erro:
+    print("\nNão foi possível salvar o relatório:", erro)
