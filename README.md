@@ -1,4 +1,4 @@
-# Python IT Support Toolkit (Em Desenvolvimento)
+# Python IT Support Toolkit
 
 Ferramenta de terminal em Python para diagnóstico de sistema e rede em Linux. Coleta informações do computador, executa testes de conectividade e exporta os resultados para JSON com data e hora.
 
@@ -35,7 +35,7 @@ Python, psutil, Linux, Git e JSON. Módulos da biblioteca padrão utilizados: `p
 É necessário ter Git, Python 3 com suporte a ambientes virtuais, pip e o comando `ping` disponível no Linux. Os comandos abaixo usam Bash ou Zsh.
 
 ```bash
-git clone https://github.com/Taique66/python-it-support-toolkit.git
+git clone https://github.com/guilhermesantosbarros/python-it-support-toolkit.git
 cd python-it-support-toolkit
 python3 -m venv .venv
 source .venv/bin/activate
@@ -131,5 +131,5 @@ Essas verificações são manuais e não constituem uma suíte de testes automat
 
 Guilherme dos Santos Barros
 
-- [GitHub](https://github.com/Taique66)
+- [GitHub](https://github.com/guilhermesantosbarros)
 - [LinkedIn](https://www.linkedin.com/in/guilherme-dos-santos-barros-a551a0282/)
