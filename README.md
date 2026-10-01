@@ -1,4 +1,4 @@
-# Python IT Support Toolkit
+# Python IT Support Toolkit (Em Desenvolvimento)
 
 Ferramenta de terminal em Python para diagnóstico de sistema e rede em Linux. Coleta informações do computador, executa testes de conectividade e exporta os resultados para JSON com data e hora.
 
