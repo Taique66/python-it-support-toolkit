@@ -62,21 +62,28 @@ def consultar_interfaces():
 def consultar_processos(filtro):
     encontrados = []
 
-    for processo in psutil.process_iter(["pid", "name", "memory_info"]):
-        nome = processo.info["name"] or ""
+    for processo in psutil.process_iter():
+        try:
+            info = processo.as_dict(
+                attrs=["pid", "name", "memory_info"]
+            )
+            nome = info["name"] or ""
 
-        if filtro in nome.lower():
-            memoria = processo.info["memory_info"]
-            memoria_mib = None
+            if filtro in nome.lower():
+                memoria = info["memory_info"]
+                memoria_mib = None
 
-            if memoria is not None:
-                memoria_mib = memoria.rss / (1024 ** 2)
+                if memoria is not None:
+                    memoria_mib = memoria.rss / (1024 ** 2)
 
-            encontrados.append({
-                "pid": processo.info["pid"],
-                "nome": nome,
-                "memoria_mib": memoria_mib
-            })
+                encontrados.append({
+                    "pid": info["pid"],
+                    "nome": nome,
+                    "memoria_mib": memoria_mib
+                })
+
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
 
     return encontrados
 
@@ -124,23 +131,25 @@ def testar_ping(destino):
         return {
             "destino": destino,
             "sucesso": resultado.returncode == 0,
-            "codigo": resultado.returncode
+            "codigo": resultado.returncode,
+            "erro": None if resultado.returncode == 0 else "O ping terminou com falha."
         }
 
     except FileNotFoundError:
         return {
             "destino": destino,
             "sucesso": False,
-            "codigo": None
+            "codigo": None,
+            "erro": "O comando ping não está instalado."
         }
 
     except subprocess.TimeoutExpired:
         return {
             "destino": destino,
             "sucesso": False,
-            "codigo": None
+            "codigo": None,
+            "erro": "O ping ultrapassou o limite de tempo."
         }
-
 dados_sistema = consultar_sistema()
 
 def consultar_portas():
@@ -214,7 +223,7 @@ dados_ping = testar_ping(destino)
 if dados_ping["sucesso"]:
     print("Ping bem-sucedido.")
 else:
-    print("Falha no ping.")
+    print("Falha no ping:", dados_ping["erro"])
 
 dominio = input("Domínio para consulta [example.com]: ").strip()
 if not dominio:
