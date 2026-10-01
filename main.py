@@ -315,12 +315,18 @@ def main():
 
     try:
         with open("report.json", "w", encoding="utf-8") as arquivo:
-            json.dump(relatorio, arquivo, indent=4, ensure_ascii=False)
+            json.dump(
+                relatorio,
+                arquivo,
+                indent=4,
+                ensure_ascii=False
+            )
 
         print("\nRelatório salvo em report.json.")
+
     except OSError as erro:
         print("\nNão foi possível salvar o relatório:", erro)
 
 
 if __name__ == "__main__":
-    main()
+    main()    
