@@ -5,7 +5,13 @@ import psutil
 import socket
 import subprocess
 import json
-import json
+from datetime import datetime
+
+
+
+
+
+
 
 def consultar_disco():
     disco = shutil.disk_usage("/")
@@ -274,6 +280,7 @@ else:
     print("Não foi possível conectar à porta 22:", dados_tcp["erro"])
 
 relatorio = {
+    "gerado_em": datetime.now().astimezone().isoformat(timespec="seconds"),
     "sistema": dados_sistema,
     "memoria": dados_memoria,
     "disco": dados_disco,
