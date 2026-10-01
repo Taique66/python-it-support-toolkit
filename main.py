@@ -135,6 +135,26 @@ def testar_ping(destino):
 
 dados_sistema = consultar_sistema()
 
+def consultar_portas():
+    portas = []
+
+    try:
+        for conexao in psutil.net_connections(kind="tcp"):
+            if conexao.status == psutil.CONN_LISTEN:
+                portas.append({
+                    "ip": conexao.laddr.ip,
+                    "porta": conexao.laddr.port,
+                    "pid": conexao.pid
+                })
+
+        return {"portas": portas, "erro": None}
+
+    except psutil.AccessDenied:
+        return {
+            "portas": portas,
+            "erro": "Sem permissão para consultar as conexões TCP."
+        }
+
 print("Meu computador usa:", dados_sistema["sistema"])
 print("Nome da máquina:", dados_sistema["nome_maquina"])
 print("Versão do kernel:", dados_sistema["kernel"])
@@ -180,7 +200,7 @@ for interface in dados_interfaces:
 destino = input("IP da VM [192.168.122.223]: ").strip()
 if not destino:
     destino = "192.168.122.223"
-    
+
 dados_ping = testar_ping(destino)
 
 if dados_ping["sucesso"]:
@@ -199,6 +219,48 @@ if dados_dns["sucesso"]:
     print("IPv4 encontrado:", dados_dns["ipv4"])
 else:
     print("Falha ao resolver o domínio:", dados_dns["erro"])
+
+print("\n=== Portas TCP locais em escuta ===")
+print("A listagem pode ser parcial, conforme as permissões.")
+
+dados_portas = consultar_portas()
+
+if dados_portas["erro"] is not None:
+    print(dados_portas["erro"])
+else:
+    for porta in dados_portas["portas"]:
+        print(
+            "IP:", porta["ip"],
+            "Porta:", porta["porta"],
+            "PID:", porta["pid"]
+        )
+
+    print("Total de registros em escuta:", len(dados_portas["portas"]))
+
+filtro = input(
+    "Nome do processo (Enter para listar todos): "
+).strip().lower()
+
+dados_processos = consultar_processos(filtro)
+
+print("\n=== Processos encontrados ===")
+
+for processo in dados_processos:
+    memoria_mib = processo["memoria_mib"]
+
+    if memoria_mib is not None:
+        print(
+            processo["pid"],
+            processo["nome"],
+            f"RAM: {memoria_mib:.2f} MiB"
+        )
+    else:
+        print(processo["pid"], processo["nome"], "RAM: indisponível")
+
+if not dados_processos:
+    print("Nenhum processo encontrado.")
+else:
+    print("Total de processos encontrados:", len(dados_processos))
 
 print("\n=== Teste TCP da porta 22 da VM ===")
 
