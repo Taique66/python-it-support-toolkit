@@ -6,7 +6,19 @@ import socket
 import subprocess
 import json
 from datetime import datetime
+from pathlib import Path
 
+def salvar_relatorio(relatorio, pasta="reports"):
+    pasta = Path(pasta)
+    pasta.mkdir(parents=True, exist_ok=True)
+
+    nome = datetime.now().strftime("report_%Y%m%d_%H%M%S_%f.json")
+    caminho = pasta / nome
+
+    with caminho.open("x", encoding="utf-8") as arquivo:
+        json.dump(relatorio, arquivo, indent=4, ensure_ascii=False)
+
+    return caminho
 
 def consultar_disco():
     disco = shutil.disk_usage("/")
@@ -174,9 +186,25 @@ def consultar_portas():
             "portas": portas,
             "erro": "Sem permissão para consultar as conexões TCP."
         }
+    
+def solicitar_destino():
+    while True:
+        destino = input("IP ou hostname de destino: ").strip()
 
+        if not destino:
+            print("Informe um IP ou hostname para continuar.")
+            continue
 
+        if destino.startswith("-") or any(
+            caractere.isspace() for caractere in destino
+        ):
+            print("Informe um destino sem espaços e sem começar com '-'.")
+            continue
+
+        return destino
+    
 def main():
+    
     print("=== Python IT Support Toolkit ===")
     dados_sistema = consultar_sistema()
 
@@ -222,9 +250,7 @@ def main():
         else:
             print("  Sem IPv4 atribuído.")
 
-    destino = input("IP da VM [192.168.122.223]: ").strip()
-    if not destino:
-        destino = "192.168.122.223"
+    destino = solicitar_destino()
 
     dados_ping = testar_ping(destino)
 
@@ -295,38 +321,31 @@ def main():
         print("Conexão TCP aceita na porta 22.")
     else:
         print("Não foi possível conectar à porta 22:", dados_tcp["erro"])
+    
 
     relatorio = {
-        "gerado_em": datetime.now().astimezone().isoformat(timespec="seconds"),
-        "sistema": dados_sistema,
-        "memoria": dados_memoria,
-        "disco": dados_disco,
-        "cpu": dados_cpu,
-        "interfaces": dados_interfaces,
-        "ping": dados_ping,
-        "dns": dados_dns,
-        "processos": {
-            "filtro": filtro,
-            "resultados": dados_processos
-        },
-        "portas_tcp": dados_portas,
-        "teste_tcp": dados_tcp
-    }
+    "gerado_em": datetime.now().astimezone().isoformat(timespec="seconds"),
+    "sistema": dados_sistema,
+    "memoria": dados_memoria,
+    "disco": dados_disco,
+    "cpu": dados_cpu,
+    "interfaces": dados_interfaces,
+    "ping": dados_ping,
+    "dns": dados_dns,
+    "processos": {
+        "filtro": filtro,
+        "resultados": dados_processos
+    },
+    "portas_tcp": dados_portas,
+    "teste_tcp": dados_tcp
+}
 
     try:
-        with open("report.json", "w", encoding="utf-8") as arquivo:
-            json.dump(
-                relatorio,
-                arquivo,
-                indent=4,
-                ensure_ascii=False
-            )
-
-        print("\nRelatório salvo em report.json.")
-
+        caminho = salvar_relatorio(relatorio)
+        print("\nRelatório salvo em:", caminho)
     except OSError as erro:
         print("\nNão foi possível salvar o relatório:", erro)
 
 
 if __name__ == "__main__":
-    main()    
+    main()
