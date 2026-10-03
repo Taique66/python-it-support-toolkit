@@ -32,13 +32,13 @@ A aplicação coleta informações do computador, executa testes básicos de con
 - Busca de processos por parte do nome, com PID e memória RSS em MiB.
 - Listagem de portas TCP locais em escuta.
 - Teste de conexão TCP na porta 22 do destino informado.
-- Relatório `report.json` com os resultados e o horário de geração.
+- Relatórios JSON na pasta `reports/`, com data e hora no nome e preservação das execuções anteriores.
 
 ## Tecnologias
 
 Python, psutil, Linux, Git e JSON.
 
-Módulos da biblioteca padrão utilizados: `platform`, `os`, `shutil`, `socket`, `subprocess`, `json`, `datetime` e `unittest`.
+Módulos da biblioteca padrão utilizados: `platform`, `os`, `shutil`, `socket`, `subprocess`, `json`, `datetime`, `pathlib` e `unittest`.
 
 ## Ambiente testado
 
@@ -81,7 +81,7 @@ O programa solicita:
 
 | Entrada | Comportamento |
 | --- | --- |
-| IP ou hostname de destino | Campo obrigatório utilizado no ping e no teste TCP da porta 22. |
+| IP ou hostname de destino | Campo obrigatório utilizado no ping e no teste TCP da porta 22. Rejeita entradas com espaços ou iniciadas por `-`. |
 | Domínio | Enter consulta `example.com`. Também é possível informar outro domínio. |
 | Nome do processo | Filtra por parte do nome, sem diferenciar maiúsculas e minúsculas. Enter lista todos os processos acessíveis. |
 
@@ -89,7 +89,7 @@ O destino não fica mais preso ao endereço IP do homelab usado durante o desenv
 
 ## Relatório JSON
 
-Ao final, o programa grava `report.json` no diretório de onde foi executado. Cada execução substitui o relatório anterior.
+Ao final, o programa cria a pasta `reports/` no diretório de onde foi executado e salva um JSON com data, hora e microssegundos no nome, como `report_20261003_131144_278533.json`. Cada execução preserva os relatórios anteriores. A função `salvar_relatorio()` concentra a gravação e devolve o caminho do arquivo criado.
 
 O arquivo reúne:
 
@@ -103,11 +103,11 @@ O arquivo reúne:
 
 O relatório reutiliza os dados coletados durante a execução. As medições acontecem em momentos diferentes; o horário de geração não representa uma coleta simultânea.
 
-O arquivo gerado está no `.gitignore`, pois contém dados do ambiente e muda a cada execução.
+A pasta `reports/` e o arquivo legado `report.json` estão no `.gitignore`, pois podem conter dados do ambiente.
 
 ## Testes automatizados
 
-A pasta `tests/` contém testes para as funções de rede e para a entrada do destino. Os testes usam mocks e não dependem de acesso real à internet.
+A pasta `tests/` contém 10 testes para as funções de rede, a entrada do destino e a gravação dos relatórios. Os testes de rede usam mocks; os de gravação usam pastas temporárias. Não dependem de acesso real à internet.
 
 Execute:
 
@@ -120,14 +120,16 @@ Atualmente são verificados cenários de:
 - resolução DNS com sucesso e falha;
 - conexão TCP com sucesso e falha;
 - ping com sucesso e timeout;
-- validação da entrada de IP/hostname.
+- rejeição de destino vazio, com espaços ou iniciado por `-`;
+- criação da pasta e gravação correta do JSON;
+- preservação dos relatórios anteriores.
 
 ## Organização
 
 | Arquivo | Responsabilidade |
 | --- | --- |
 | `main.py` | Funções de consulta e teste, interação no terminal e exportação do relatório. |
-| `tests/test_main.py` | Testes automatizados das funções de rede e da entrada do destino. |
+| `tests/test_main.py` | Testes automatizados de rede, entrada do destino e salvamento dos relatórios. |
 | `requirements.txt` | Dependência externa com versão fixada. |
 | `.gitignore` | Exclusão do ambiente virtual, cache, relatório e arquivos temporários. |
 | `README.md` | Apresentação e instruções de uso. |
@@ -145,6 +147,8 @@ Além da suíte automatizada, foram realizadas verificações manuais durante o 
 - Listagem de portas TCP locais em escuta.
 - Gravação de relatório JSON, inclusive em execução com falha de DNS.
 - Inclusão de data e hora no relatório.
+- Gravação de relatórios com nomes distintos na pasta `reports/`.
+- Execução local dos 10 testes com resultado `OK`.
 - Verificação das dependências no ambiente virtual com `python -m pip check`.
 
 ## Limitações
@@ -156,7 +160,7 @@ Além da suíte automatizada, foram realizadas verificações manuais durante o 
 - O teste TCP verifica apenas se a conexão na porta 22 é aceita. Não autentica nem verifica o funcionamento completo do SSH.
 - O relatório de ping guarda destino, sucesso e código de retorno; não estrutura latência ou perda de pacotes em campos próprios.
 - O tratamento de erros é básico e ainda pode ser ampliado em versões futuras.
-- Os testes automatizados atuais cobrem principalmente funções de rede; a coleta completa de métricas do sistema ainda depende de validações manuais.
+- Os testes automatizados atuais cobrem rede, entrada e relatórios; a coleta completa de métricas do sistema ainda depende de validações manuais.
 
 ## Próximos passos possíveis
 
