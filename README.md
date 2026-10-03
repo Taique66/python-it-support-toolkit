@@ -1,8 +1,23 @@
-# Python IT Support Toolkit (Em Desenvolvimento)
+# Python IT Support Toolkit
 
-Ferramenta de terminal em Python para diagnóstico de sistema e rede em Linux. Coleta informações do computador, executa testes de conectividade e exporta os resultados para JSON com data e hora.
+Toolkit de terminal em Python para diagnóstico de sistema e rede em Linux, criado para praticar atividades de **Suporte de TI, Infraestrutura e NOC**.
 
-Projeto desenvolvido para praticar automação de suporte de TI, infraestrutura e fundamentos de segurança defensiva, com testes no próprio computador e em um homelab.
+A aplicação coleta informações do computador, executa testes básicos de conectividade e exporta os resultados para um relatório JSON com data e hora.
+
+**Status: v1 concluída.**
+
+## Competências demonstradas
+
+- Diagnóstico de Linux.
+- Troubleshooting básico de sistema e rede.
+- TCP/IP, DNS, ping e testes de conectividade.
+- Portas TCP e validação da porta 22/SSH.
+- Processos e consumo de memória.
+- Automação com Python.
+- Estruturação de dados e relatórios em JSON.
+- Tratamento básico de erros.
+- Git e documentação técnica.
+- Testes automatizados com `unittest` e mocks.
 
 ## Funcionalidades
 
@@ -17,11 +32,13 @@ Projeto desenvolvido para praticar automação de suporte de TI, infraestrutura 
 - Busca de processos por parte do nome, com PID e memória RSS em MiB.
 - Listagem de portas TCP locais em escuta.
 - Teste de conexão TCP na porta 22 do destino informado.
-- Relatório `report.json` com os resultados e o horário de geração.
+- Relatórios JSON na pasta `reports/`, com data e hora no nome e preservação das execuções anteriores.
 
 ## Tecnologias
 
-Python, psutil, Linux, Git e JSON. Módulos da biblioteca padrão utilizados: `platform`, `os`, `shutil`, `socket`, `subprocess`, `json` e `datetime`.
+Python, psutil, Linux, Git e JSON.
+
+Módulos da biblioteca padrão utilizados: `platform`, `os`, `shutil`, `socket`, `subprocess`, `json`, `datetime`, `pathlib` e `unittest`.
 
 ## Ambiente testado
 
@@ -32,17 +49,19 @@ Python, psutil, Linux, Git e JSON. Módulos da biblioteca padrão utilizados: `p
 
 ## Instalação
 
-É necessário ter Git, Python 3 com suporte a ambientes virtuais, pip e o comando `ping` disponível no Linux. Os comandos abaixo usam Bash ou Zsh.
+É necessário ter Git, Python 3 com suporte a ambientes virtuais, pip e o comando `ping` disponível no Linux.
+
+Os comandos abaixo usam Bash ou Zsh:
 
 ```bash
-git clone https://github.com/Taique66/python-it-support-toolkit.git
+git clone https://github.com/guilhermesantosbarros/python-it-support-toolkit.git
 cd python-it-support-toolkit
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-No Fish, substitua a ativação por:
+No Fish:
 
 ```fish
 source .venv/bin/activate.fish
@@ -52,25 +71,25 @@ A dependência externa está registrada em `requirements.txt`. Os demais módulo
 
 ## Como usar
 
-Com o ambiente virtual ativo, execute na pasta do projeto:
+Com o ambiente virtual ativo:
 
 ```bash
 python main.py
 ```
 
-O programa solicita três entradas:
+O programa solicita:
 
 | Entrada | Comportamento |
 | --- | --- |
-| IP da VM | Enter utiliza `192.168.122.223`, endereço do homelab usado no desenvolvimento. Informe o endereço do seu destino para outro ambiente. |
-| Domínio | Enter consulta `example.com`. Também é possível informar um domínio, como `google.com`. |
+| IP ou hostname de destino | Campo obrigatório utilizado no ping e no teste TCP da porta 22. Rejeita entradas com espaços ou iniciadas por `-`. |
+| Domínio | Enter consulta `example.com`. Também é possível informar outro domínio. |
 | Nome do processo | Filtra por parte do nome, sem diferenciar maiúsculas e minúsculas. Enter lista todos os processos acessíveis. |
 
-O ping e o teste TCP usam o mesmo destino. Para obter sucesso no teste da porta 22, o destino precisa estar acessível e aceitar conexões nessa porta.
+O destino não fica mais preso ao endereço IP do homelab usado durante o desenvolvimento, permitindo testar outras máquinas e ambientes.
 
 ## Relatório JSON
 
-Ao final, o programa grava `report.json` no diretório de onde foi executado. Cada execução substitui o relatório anterior.
+Ao final, o programa cria a pasta `reports/` no diretório de onde foi executado e salva um JSON com data, hora e microssegundos no nome, como `report_20261003_131144_278533.json`. Cada execução preserva os relatórios anteriores. A função `salvar_relatorio()` concentra a gravação e devolve o caminho do arquivo criado.
 
 O arquivo reúne:
 
@@ -84,24 +103,40 @@ O arquivo reúne:
 
 O relatório reutiliza os dados coletados durante a execução. As medições acontecem em momentos diferentes; o horário de geração não representa uma coleta simultânea.
 
-Em JSON, `true` e `false` representam resultados booleanos, e `null` representa ausência de valor. Uma falha de conectividade também é um resultado de diagnóstico e pode ser registrada no arquivo.
+A pasta `reports/` e o arquivo legado `report.json` estão no `.gitignore`, pois podem conter dados do ambiente.
 
-O arquivo gerado está no `.gitignore`, pois contém dados do ambiente e muda a cada execução.
+## Testes automatizados
+
+A pasta `tests/` contém 10 testes para as funções de rede, a entrada do destino e a gravação dos relatórios. Os testes de rede usam mocks; os de gravação usam pastas temporárias. Não dependem de acesso real à internet.
+
+Execute:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Atualmente são verificados cenários de:
+
+- resolução DNS com sucesso e falha;
+- conexão TCP com sucesso e falha;
+- ping com sucesso e timeout;
+- rejeição de destino vazio, com espaços ou iniciado por `-`;
+- criação da pasta e gravação correta do JSON;
+- preservação dos relatórios anteriores.
 
 ## Organização
 
 | Arquivo | Responsabilidade |
 | --- | --- |
 | `main.py` | Funções de consulta e teste, interação no terminal e exportação do relatório. |
+| `tests/test_main.py` | Testes automatizados de rede, entrada do destino e salvamento dos relatórios. |
 | `requirements.txt` | Dependência externa com versão fixada. |
-| `.gitignore` | Exclusão do ambiente virtual, cache e relatório gerado do controle de versão. |
+| `.gitignore` | Exclusão do ambiente virtual, cache, relatório e arquivos temporários. |
 | `README.md` | Apresentação e instruções de uso. |
-
-As funções retornam listas ou dicionários que o programa utiliza para apresentar os resultados e compor o relatório. O comando externo de ping também exibe sua própria saída no terminal.
 
 ## Validações realizadas
 
-Verificações manuais durante o desenvolvimento:
+Além da suíte automatizada, foram realizadas verificações manuais durante o desenvolvimento:
 
 - Coleta de sistema, RAM, disco, CPU e interfaces.
 - Ping com resposta da VM e conexão aceita na porta 22.
@@ -112,9 +147,9 @@ Verificações manuais durante o desenvolvimento:
 - Listagem de portas TCP locais em escuta.
 - Gravação de relatório JSON, inclusive em execução com falha de DNS.
 - Inclusão de data e hora no relatório.
+- Gravação de relatórios com nomes distintos na pasta `reports/`.
+- Execução local dos 10 testes com resultado `OK`.
 - Verificação das dependências no ambiente virtual com `python -m pip check`.
-
-Essas verificações são manuais e não constituem uma suíte de testes automatizados. A instalação em um ambiente novo ainda não foi validada.
 
 ## Limitações
 
@@ -124,12 +159,23 @@ Essas verificações são manuais e não constituem uma suíte de testes automat
 - A consulta DNS retorna um IPv4 e não possui um tempo limite explícito definido pelo programa.
 - O teste TCP verifica apenas se a conexão na porta 22 é aceita. Não autentica nem verifica o funcionamento completo do SSH.
 - O relatório de ping guarda destino, sucesso e código de retorno; não estrutura latência ou perda de pacotes em campos próprios.
-- O tratamento de erros é básico. Por exemplo, mudanças ou restrições de acesso aos processos durante a consulta ainda precisam de tratamento mais abrangente.
-- O projeto lista processos, mas não gerencia nem consulta o estado de serviços pelo systemd.
+- O tratamento de erros é básico e ainda pode ser ampliado em versões futuras.
+- Os testes automatizados atuais cobrem rede, entrada e relatórios; a coleta completa de métricas do sistema ainda depende de validações manuais.
+
+## Próximos passos possíveis
+
+A v1 está concluída. Evoluções futuras podem incluir:
+
+- parâmetros de linha de comando;
+- suporte a Windows;
+- consulta de serviços `systemd`;
+- estruturação de latência e perda de pacotes;
+- exportação adicional em CSV;
+- integração com ferramentas de monitoramento.
 
 ## Autor
 
 Guilherme dos Santos Barros
 
-- [GitHub](https://github.com/Taique66)
+- [GitHub](https://github.com/guilhermesantosbarros)
 - [LinkedIn](https://www.linkedin.com/in/guilherme-dos-santos-barros-a551a0282/)
