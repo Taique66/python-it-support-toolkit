@@ -6,6 +6,12 @@ A aplicação coleta informações do computador, executa testes básicos de con
 
 **Status: v1 concluída.**
 
+## Demonstração visual
+
+![Exemplo ilustrativo do diagnóstico no terminal com dados fictícios](docs/images/diagnostico-demo.svg)
+
+A imagem ilustra o formato da saída com valores inteiramente fictícios. Não é uma captura de execução real e não contém IPs, hostname ou informações do computador do autor.
+
 ## Competências demonstradas
 
 - Diagnóstico de Linux.
