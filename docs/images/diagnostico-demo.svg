@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="790" viewBox="0 0 1060 790" role="img" aria-labelledby="title desc">
+<title id="title">Exemplo ilustrativo do terminal com dados fictícios</title><desc id="desc">Todos os valores são fictícios. Esta imagem ilustra a saída do programa, sem dados do computador do autor.</desc>
+<rect width="1060" height="790" rx="14" fill="#101b24"/><rect width="1060" height="58" rx="14" fill="#20313d"/>
+<circle cx="28" cy="29" r="7" fill="#f87171"/><circle cx="52" cy="29" r="7" fill="#fbbf24"/><circle cx="76" cy="29" r="7" fill="#4ade80"/>
+<text x="104" y="36" fill="#e5edf3" font-family="monospace" font-size="18">Python IT Support Toolkit · dados fictícios</text>
+<text x="30" y="98" fill="#6ee7b7" font-family="monospace" font-size="19">=== Python IT Support Toolkit ===</text>
+<text x="30" y="126" fill="#e5edf3" font-family="monospace" font-size="19">Meu computador usa: Linux</text>
+<text x="30" y="154" fill="#e5edf3" font-family="monospace" font-size="19">Nome da máquina: maquina-exemplo</text>
+<text x="30" y="182" fill="#e5edf3" font-family="monospace" font-size="19">Memória total: 8.00 GiB</text>
+<text x="30" y="210" fill="#e5edf3" font-family="monospace" font-size="19">Uso da RAM: 35.00%</text>
+<text x="30" y="238" fill="#e5edf3" font-family="monospace" font-size="19">Espaço livre do disco: 120.00 GiB</text>
+<text x="30" y="266" fill="#e5edf3" font-family="monospace" font-size="19">Uso da CPU: 5.00%</text>
+<text x="30" y="294" fill="#e5edf3" font-family="monospace" font-size="19">CPUs lógicas: 4</text>
+<text x="30" y="322" fill="#e5edf3" font-family="monospace" font-size="19"></text>
+<text x="30" y="350" fill="#e5edf3" font-family="monospace" font-size="19">IP ou hostname de destino: servidor-exemplo</text>
+<text x="30" y="378" fill="#e5edf3" font-family="monospace" font-size="19">Ping bem-sucedido.</text>
+<text x="30" y="406" fill="#e5edf3" font-family="monospace" font-size="19">Domínio: example.com</text>
+<text x="30" y="434" fill="#e5edf3" font-family="monospace" font-size="19">IPv4 encontrado: [omitido]</text>
+<text x="30" y="462" fill="#e5edf3" font-family="monospace" font-size="19"></text>
+<text x="30" y="490" fill="#6ee7b7" font-family="monospace" font-size="19">=== Processos encontrados ===</text>
+<text x="30" y="518" fill="#e5edf3" font-family="monospace" font-size="19">1000 editor RAM: 150.00 MiB</text>
+<text x="30" y="546" fill="#e5edf3" font-family="monospace" font-size="19">Total de processos encontrados: 1</text>
+<text x="30" y="574" fill="#e5edf3" font-family="monospace" font-size="19"></text>
+<text x="30" y="602" fill="#6ee7b7" font-family="monospace" font-size="19">=== Teste TCP da porta 22 do destino ===</text>
+<text x="30" y="630" fill="#e5edf3" font-family="monospace" font-size="19">Conexão TCP aceita na porta 22.</text>
+<text x="30" y="658" fill="#e5edf3" font-family="monospace" font-size="19"></text>
+<text x="30" y="686" fill="#e5edf3" font-family="monospace" font-size="19">Relatório salvo em: reports/report_DATA_HORA.json</text>
+<text x="30" y="768" fill="#9eb2c1" font-family="sans-serif" font-size="16">Exemplo ilustrativo · não representa uma execução real · nenhum dado pessoal</text></svg>
