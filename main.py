@@ -176,6 +176,16 @@ def consultar_portas():
         }
 
 
+def solicitar_destino():
+    while True:
+        destino = input("IP ou hostname de destino: ").strip()
+
+        if destino:
+            return destino
+
+        print("Informe um IP ou hostname para continuar.")
+
+
 def main():
     print("=== Python IT Support Toolkit ===")
     dados_sistema = consultar_sistema()
@@ -222,10 +232,7 @@ def main():
         else:
             print("  Sem IPv4 atribuído.")
 
-    destino = input("IP da VM [192.168.122.223]: ").strip()
-    if not destino:
-        destino = "192.168.122.223"
-
+    destino = solicitar_destino()
     dados_ping = testar_ping(destino)
 
     if dados_ping["sucesso"]:
@@ -287,7 +294,7 @@ def main():
     else:
         print("Total de processos encontrados:", len(dados_processos))
 
-    print("\n=== Teste TCP da porta 22 da VM ===")
+    print("\n=== Teste TCP da porta 22 do destino ===")
 
     dados_tcp = testar_tcp(destino, 22)
 
@@ -329,4 +336,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()    
+    main()
